@@ -1,8 +1,8 @@
 package banking.controller;
 
-import banking.dto.AccountUser;
-import banking.dto.User;
-import banking.service.ApplyService;
+import banking.dto.request.DepositRequest;
+import banking.dto.response.DepositResponse;
+import banking.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +16,27 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final ApplyService applyService;
+    private final AccountService accountService;
 
     /**
-     * 계좌 신청
+     * 입금
      */
-    @PostMapping("/apply")
-    public ResponseEntity openAccount(final @Valid @RequestBody User user) {
-        AccountUser accountUser = applyService.createAccount(user);
-        return new ResponseEntity<>(accountUser, HttpStatus.OK);
+    @PostMapping("/deposit")
+    public ResponseEntity deposit(final @Valid @RequestBody DepositRequest deposit) {
+        DepositResponse depositResult = accountService.deposit(deposit);
+        if(depositResult.getCode() == "500") {
+            return new ResponseEntity<>(depositResult, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(depositResult, HttpStatus.OK);
+    }
+
+    /**
+     * 출금
+     */
+    @PostMapping("/withdraw")
+    public ResponseEntity withdraw(final @Valid @RequestBody DepositRequest deposit) {
+        DepositResponse depositResult = accountService.deposit(deposit);
+        return new ResponseEntity<>(depositResult, HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,6 @@
 package banking.helper.exception;
 
-import banking.helper.Utils;
+import banking.helper.util.Utils;
 import banking.helper.enums.ResponseStatusType;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.id.IdentifierGenerationException;
@@ -17,17 +17,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @ControllerAdvice
 @Slf4j
 public class GlobalControllerAdvice {
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity exception(Exception e) {
-        System.out.println("GLOBAL+_+");
-        log.error(e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public ResponseEntity exception(Exception e) {
+//        System.out.println("GLOBAL+_+");
+//        log.error(e.getMessage());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//    }
 
 
     /**
@@ -88,6 +89,23 @@ public class GlobalControllerAdvice {
     }
 
 
+    @ExceptionHandler({
+            NullPointerException.class,
+            NoSuchElementException.class, // db에 데이터가 없는 경우
+    })
+    public ResponseEntity InternalServerException(Exception e, HttpServletRequest httpServletRequest) {
+        log.error(e.getMessage());
+        String name = e.getClass().getName();
+
+        List<Error> errorList = new ArrayList<>();
+        errorList.add(Utils.getErrMsg(name + "(" + e.getMessage() + ")", Utils.stackTractToString(e)));
+
+        ErrorResponse errResponse = Utils.getErrResponse(errorList,
+                httpServletRequest, ResponseStatusType.INTERNAL_SERVER_ERROR);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errResponse);
+
+    }
 
 
 }

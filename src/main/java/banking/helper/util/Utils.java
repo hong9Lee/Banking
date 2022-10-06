@@ -1,10 +1,12 @@
-package banking.helper;
+package banking.helper.util;
 
 import banking.helper.enums.ResponseStatusType;
 import banking.helper.exception.Error;
 import banking.helper.exception.ErrorResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 public class Utils {
@@ -28,5 +30,12 @@ public class Utils {
         errorMsg.setMessage(msg);
 
         return errorMsg;
+    }
+
+    /** Exception의 printStackTrace.toString()을 생성 */
+    public static String stackTractToString(Exception e) {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
     }
 }
