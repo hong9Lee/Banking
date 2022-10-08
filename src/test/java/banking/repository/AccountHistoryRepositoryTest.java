@@ -3,7 +3,7 @@ package banking.repository;
 import banking.dto.entity.Account;
 import banking.dto.entity.AccountHistory;
 import banking.dto.request.DepositRequest;
-import banking.service.AccountService;
+import banking.service.DepositService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ class AccountHistoryRepositoryTest {
     AccountRepository accountRepository;
 
     @Autowired
-    AccountService accountService;
+    DepositService depositService;
 
     @BeforeEach
     void deleteHistory() {
@@ -41,10 +41,10 @@ class AccountHistoryRepositoryTest {
         account.setPrivateToken(UUID.randomUUID().toString());
         accountRepository.save(account);
 
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(account.getPublicToken());
-        depositRequest.setMoney(10000);
-        accountService.deposit(depositRequest);
+        DepositRequest req = new DepositRequest();
+        req.setPublicToken(account.getPublicToken());
+        req.setMoney(10000);
+        depositService.deposit(req);
 
 
         List<AccountHistory> findHistory = historyRepository.findAll();
@@ -61,17 +61,17 @@ class AccountHistoryRepositoryTest {
         account.setMoney(100);
         accountRepository.save(account);
 
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(account.getPublicToken());
-        depositRequest.setMoney(1000);
-        accountService.deposit(depositRequest);
+        DepositRequest req = new DepositRequest();
+        req.setPublicToken(account.getPublicToken());
+        req.setMoney(1000);
+        depositService.deposit(req);
 
         Account findAccount = accountRepository.findByPublicToken(account.getPublicToken());
 
-        DepositRequest depositRequest1 = new DepositRequest();
-        depositRequest1.setPublicToken(findAccount.getPublicToken());
-        depositRequest1.setMoney(2000);
-        accountService.deposit(depositRequest1);
+        DepositRequest req1 = new DepositRequest();
+        req1.setPublicToken(findAccount.getPublicToken());
+        req1.setMoney(2000);
+        depositService.deposit(req1);
 
         List<AccountHistory> findHistory = historyRepository.findAll();
         assertEquals(findHistory.get(0).getCalcMoney(), 1000);

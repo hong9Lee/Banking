@@ -1,12 +1,16 @@
 package banking.helper.exception;
 
+import banking.dto.request.UnKnownAccountRequest;
+import banking.dto.response.WithdrawResponse;
+import banking.helper.enums.StatusCode;
 import banking.helper.util.Utils;
 import banking.helper.enums.ResponseStatusType;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.id.IdentifierGenerationException;
+import org.json.simple.parser.ParseException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +18,8 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +29,12 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 @Slf4j
 public class GlobalControllerAdvice {
-//    @ExceptionHandler(value = Exception.class)
-//    public ResponseEntity exception(Exception e) {
-//        System.out.println("GLOBAL+_+");
-//        log.error(e.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-//    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity exception(Exception e) {
+        System.out.println("GLOBAL+_+");
+        log.error(e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
 
 
     /**
@@ -56,21 +62,6 @@ public class GlobalControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errResponse);
     }
-
-    @ExceptionHandler({ IdentifierGenerationException.class })
-    public ResponseEntity RequestParamException(IdentifierGenerationException e) {
-        System.out.println(e);
-        System.out.println(e);
-        System.out.println("IdentifierGenerationException #############");
-
-
-//        ErrorResponse errResponse = Utils.getErrResponse(errorList,
-//                httpServletRequest, ResponseStatusType.BAD_REQUEST);
-
-        return null;
-    }
-
-
 
     /** 사용자 ID 중복 Exception */
     @ExceptionHandler({ DuplicateKeyException.class })
@@ -107,5 +98,46 @@ public class GlobalControllerAdvice {
 
     }
 
+
+    @ExceptionHandler({
+            UnKnownAccountException.class
+    })
+    public ResponseEntity UnKnownAccountException(UnKnownAccountException e) {
+        log.error(e.getMsg());
+        System.out.println("############" + "GLOBAL UnKnownAccountException");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                UnKnownAccountRequest.builder()
+                .msg(e.getMsg())
+                .code(e.getCode())
+                .build()
+        );
+    }
+
+    @ExceptionHandler({
+            BalanceException.class
+    })
+    public ResponseEntity BalanceException(BalanceException e) {
+        log.error(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                WithdrawResponse.builder()
+                        .userId(e.getUserId())
+                        .code(StatusCode.LACK_OF_BALANCE.getCode())
+                        .balance(e.getBalance())
+                        .build()
+        );
+
+    }
+
+
+    @ExceptionHandler({
+            TransferException.class
+    })
+    public ResponseEntity TransferException(TransferException e) throws ParseException {
+        System.out.println("############" + "GLOBAL TransferException");
+        log.error(e.getMsg());
+        log.error(e.getCode());
+        return null;
+    }
 
 }

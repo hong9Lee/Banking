@@ -1,6 +1,5 @@
 package banking.dto.response;
 
-import banking.helper.enums.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DepositResponse {
+public class WithdrawResponse {
+
     private String userId;
     private String code;
+    private long balance;
+
 }

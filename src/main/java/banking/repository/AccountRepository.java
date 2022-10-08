@@ -13,5 +13,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     boolean existsByUserId(String userId);
 
     Account findByPublicToken(String publicToken);
+    Account findByPrivateToken(String privateToken);
 
 }

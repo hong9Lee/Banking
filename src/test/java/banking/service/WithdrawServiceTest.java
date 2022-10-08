@@ -1,7 +1,7 @@
 package banking.service;
 
 import banking.dto.entity.Account;
-import banking.dto.request.DepositRequest;
+import banking.dto.request.WithdrawRequest;
 import banking.repository.AccountRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,31 +14,34 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
-class AccountServiceTest {
+class WithdrawServiceTest {
 
     @Autowired
     AccountRepository accountRepository;
 
     @Autowired
-    AccountService accountService;
+    WithdrawService withdrawService;
+
 
     @Test
-    @Description("deposit 메소드 테스트")
-    void deposit_성공_테스트() {
+    @Description("withdraw 메소드 테스트")
+    @Transactional
+    void withdraw_성공_테스트() {
         Account account = new Account();
         account.setPublicToken(UUID.randomUUID().toString());
         account.setMoney(1000);
         accountRepository.save(account);
 
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(account.getPublicToken());
-        depositRequest.setMoney(1000);
+        WithdrawRequest req = new WithdrawRequest();
+        req.setPrivateToken(account.getPrivateToken());
+        req.setMoney(100);
 
-        accountService.deposit(depositRequest);
+        withdrawService.withdraw(req);
 
-        Account findAccount = accountRepository.findByPublicToken(account.getPublicToken());
-        assertEquals(findAccount.getMoney(), 2000);
+        Account findAccount = accountRepository.findByPrivateToken(account.getPrivateToken());
+        assertEquals(findAccount.getMoney(), 900);
+
+
     }
 
 }

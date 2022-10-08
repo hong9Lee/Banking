@@ -39,14 +39,14 @@ class AccountControllerTest {
         account.setPrivateToken(UUID.randomUUID().toString());
         accountRepository.save(account);
 
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(account.getPublicToken());
-        depositRequest.setMoney(1000);
+        DepositRequest accountRequest = new DepositRequest();
+        accountRequest.setPublicToken(account.getPublicToken());
+        accountRequest.setMoney(1000);
 
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/deposit")
-                        .content(mapper.writeValueAsString(depositRequest))
+                        .content(mapper.writeValueAsString(accountRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk());
@@ -58,14 +58,14 @@ class AccountControllerTest {
     @Test
     @Description("money 유효성 테스트")
     void 필수파라미터_money_유효성테스트() throws Exception {
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(UUID.randomUUID().toString());
-        depositRequest.setMoney(-1);
+        DepositRequest accountRequest = new DepositRequest();
+        accountRequest.setPublicToken(UUID.randomUUID().toString());
+        accountRequest.setMoney(-1);
 
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/deposit")
-                        .content(mapper.writeValueAsString(depositRequest))
+                        .content(mapper.writeValueAsString(accountRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest());
@@ -74,13 +74,13 @@ class AccountControllerTest {
     @Test
     @Description("필수 파라미터(money) 유효성 테스트")
     void 필수파라미터_money_테스트() throws Exception {
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken(UUID.randomUUID().toString());
+        DepositRequest accountRequest = new DepositRequest();
+        accountRequest.setPublicToken(UUID.randomUUID().toString());
 
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/deposit")
-                        .content(mapper.writeValueAsString(depositRequest))
+                        .content(mapper.writeValueAsString(accountRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest());
@@ -89,14 +89,14 @@ class AccountControllerTest {
     @Test
     @Description("money 유효성 테스트")
     void 필수파라미터_publicToken_유효성테스트() throws Exception {
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setPublicToken("123456789");
-        depositRequest.setMoney(1000);
+        DepositRequest accountRequest = new DepositRequest();
+        accountRequest.setPublicToken("123456789");
+        accountRequest.setMoney(1000);
 
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/deposit")
-                        .content(mapper.writeValueAsString(depositRequest))
+                        .content(mapper.writeValueAsString(accountRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest());
@@ -105,13 +105,13 @@ class AccountControllerTest {
     @Test
     @Description("필수 파라미터(publicToken) 유효성 테스트")
     void 필수파라미터_publicToken_테스트() throws Exception {
-        DepositRequest depositRequest = new DepositRequest();
-        depositRequest.setMoney(1000);
+        DepositRequest accountRequest = new DepositRequest();
+        accountRequest.setMoney(1000);
 
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/deposit")
-                        .content(mapper.writeValueAsString(depositRequest))
+                        .content(mapper.writeValueAsString(accountRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest());
